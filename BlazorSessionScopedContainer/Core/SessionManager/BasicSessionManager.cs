@@ -43,7 +43,7 @@ namespace BlazorSessionScopedContainer.Core.SessionManager
 				[authenticationGuid.Value]
 				.Add(new ServiceEntry<T>(this, () =>
 				{
-					return GetSessionInstance<T>(SessionType.Volatile,
+					return GetSessionInstance<T>(SessionType.Authenticated,
 						new()
 						{
 							{ SessionType.Authenticated, authenticationGuid.Value },
@@ -66,7 +66,7 @@ namespace BlazorSessionScopedContainer.Core.SessionManager
 				[Guid.Empty]
 				.Add(new ServiceEntry<T>(this, () =>
 				{
-					return GetSessionInstance<T>(SessionType.Volatile,
+					return GetSessionInstance<T>(SessionType.Global,
 						new()
 						{
 							{ SessionType.Global, Guid.Empty }
@@ -87,7 +87,7 @@ namespace BlazorSessionScopedContainer.Core.SessionManager
 				[Guid.Empty]
 				.Add(new ServiceInterfaceEntry<T, U>(this, () =>
 				{
-					return GetSessionInstance<U>(SessionType.Volatile,
+					return GetSessionInstance<U>(SessionType.Global,
 						new()
 						{
 							{ SessionType.Global, Guid.Empty }
@@ -160,6 +160,9 @@ namespace BlazorSessionScopedContainer.Core.SessionManager
 			{
 				foreach (var searchId in _sessionTypeMappings[sessionType])
 				{
+					if (!_serviceContainer.ContainsKey(searchId))
+						continue;
+
 					var serviceInstance = _serviceContainer[searchId][sessionIds[searchId]].Find(p => p.AreServicesEqual(type));
 					if (serviceInstance != null)
 						requiredServiceInstances.Add(serviceInstance.GetServiceInstance());
