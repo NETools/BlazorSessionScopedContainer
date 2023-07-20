@@ -35,16 +35,16 @@ namespace BlazorSessionScopedContainer.RazorComponents.View.Auth
 
 		protected override void OnParametersSet()
 		{
-			//_authService = Session.GetService<INAuthenticationService<UserType>>();
+			_authService = Session.GetGlobalService<INAuthenticationService<UserType>>();
 			if (_authService == null)
 			{
 				_authorized = false;
 				return;
 			}
 
-			//var currentUser = _authService.CurrentUser(Session);
+			var currentUser = _authService.CurrentUser(new SessionId(Session.GetSession()));
 
-			//_authorized = currentUser != null && Roles.Split(',').ToList().Contains(currentUser.Role);
+			_authorized = currentUser != null && Roles.Split(',').ToList().Contains(currentUser.Role);
 		}
 
 	}
