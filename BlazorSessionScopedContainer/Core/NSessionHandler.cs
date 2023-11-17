@@ -36,22 +36,22 @@ namespace BlazorSessionScopedContainer.Core
         }
 
 
-        public void AddVolatileService<T>(SessionId sessionId, params object[] args) where T : class, INotifyPropertyChanged
+        public void AddVolatileService<T>(SessionId sessionId, params object[] args) where T : class
         {
             SessionManager.AddVolatileService<T>(sessionId, args);
         }
 
-        public void AddGlobalService<T>(params object[] args) where T : class, INotifyPropertyChanged
+        public void AddGlobalService<T>(params object[] args) where T : class
         {
             SessionManager.AddGlobalService<T>(args);
         }
 
-        public void AddVolatileService<T, U>(SessionId sessionId, params object[] args) where T : class, INotifyPropertyChanged where U : class, T
+        public void AddVolatileService<T, U>(SessionId sessionId, params object[] args) where T : class where U : class, T
         {
             SessionManager.AddVolatileService<T, U>(sessionId, args);
         }
 
-        public void AddGlobalService<T, U>(params object[] args) where T : class, INotifyPropertyChanged where U : class, T
+        public void AddGlobalService<T, U>(params object[] args) where T : class where U : class, T
         {
             SessionManager.AddGlobalService<T, U>(args);
         }

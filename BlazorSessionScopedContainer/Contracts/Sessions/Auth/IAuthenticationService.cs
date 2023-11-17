@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace BlazorSessionScopedContainer.Contracts.Sessions.Auth
 {
-	public interface INAuthenticationService<User> : INotifyPropertyChanged where User : class, IUser
+	public interface INAuthenticationService<User> where User : class, IUser
 	{
-		public User CurrentUser(SessionId sessionId);
-        public bool IsSessionLoggedIn(SessionId session);
+		public User CurrentUser(Guid? sessionId);
+        public bool IsSessionLoggedIn(Guid? session);
     }
 }

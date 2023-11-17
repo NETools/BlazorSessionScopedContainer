@@ -9,7 +9,7 @@ namespace BlazorSessionScopedContainer.Contracts.Migration
 {
 	public interface IMigrationContext
 	{
-		T RetrieveData<T>(SessionType sessionType, Guid sessionId, object[] dependencies);
-		void Save<T>(T instance, string propertyName, SessionType sessionType, Guid sessionId);
+		T RetrieveData<T>(Dictionary<string, dynamic> arguments, object[] dependencies);
+		void Save<T>(T instance, string propertyName, Dictionary<string, dynamic> arguments);
 	}
 }

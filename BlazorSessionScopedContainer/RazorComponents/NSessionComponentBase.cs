@@ -7,5 +7,16 @@ namespace BlazorSessionScopedContainer.RazorComponents
     {
         [Inject]
         public NSession Session { get; set; }
+		protected override async Task OnAfterRenderAsync(bool firstRender)
+		{
+            await base.OnAfterRenderAsync(firstRender);
+			if (firstRender)
+            {
+                await OnServicesLoading();
+                StateHasChanged();
+            }
+		}
+
+        protected abstract Task OnServicesLoading();
     }
 }

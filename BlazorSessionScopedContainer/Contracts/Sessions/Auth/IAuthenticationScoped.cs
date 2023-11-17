@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BlazorSessionScopedContainer.Contracts.Sessions.Auth
 {
-    public interface IAuthenticationScoped : INotifyPropertyChanged
+    public interface IAuthenticationScoped
     {
         bool IsAuthorized(IUser user);
     }

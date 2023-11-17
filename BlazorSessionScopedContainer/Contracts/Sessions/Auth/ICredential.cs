@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BlazorSessionScopedContainer.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,12 +9,11 @@ namespace BlazorSessionScopedContainer.Contracts.Sessions.Auth
 {
     public interface ICredential 
 	{
-        Dictionary<string, string> UserData { get; }
+        List<CredentialSlot> UserData { get; set; }
 		string CredentialId { get; }
 		bool IsActivated { get; }
 
-        void Activate();
-        bool ValidateCredentials(ICredential credential);
+        CredentialSlot FindSlot(string credentialName);
 
     }
 }

@@ -19,7 +19,7 @@ namespace BlazorSessionScopedContainer.Core
             this._httpContext = _httpContext;
         }
 
-        public T? GetVolatileService<T>() where T : class, INotifyPropertyChanged
+        public T? GetVolatileService<T>() where T : class
         {
             var session = GetSession();
             if (!session.HasValue)
@@ -28,7 +28,7 @@ namespace BlazorSessionScopedContainer.Core
             return RetrieveService<T>(SessionType.Volatile, session.Value);
         }
 
-        public T? GetGlobalService<T>() where T : class, INotifyPropertyChanged
+        public T? GetGlobalService<T>() where T : class
         {
             return RetrieveService<T>(SessionType.Global, Guid.Empty);
         }
@@ -45,9 +45,9 @@ namespace BlazorSessionScopedContainer.Core
             if (userManagementService == null)
                 return null;
 
-            if(userManagementService.IsSessionLoggedIn(sessionId))
+            if(userManagementService.IsSessionLoggedIn(sessionId.Guid))
             {
-                var currentUser = userManagementService.CurrentUser(sessionId);
+                var currentUser = userManagementService.CurrentUser(sessionId.Guid);
                 NSessionHandler.Default().SessionManager.AddAuthService<T>(sessionId, new SessionId(currentUser.UserGuid));
                 
                 var authenticatedService = RetrieveService<T>(SessionType.Authenticated, currentUser.UserGuid);
@@ -64,9 +64,9 @@ namespace BlazorSessionScopedContainer.Core
             return null;
         }
 
-        private T? RetrieveService<T>(SessionType sessionType, Guid id) where T : class, INotifyPropertyChanged
+        private T? RetrieveService<T>(SessionType sessionType, Guid id) where T : class
         {
-            return (T?)NSessionHandler.Default().SessionManager.GetService<T>(sessionType, new SessionId(id));
+            return NSessionHandler.Default().SessionManager.GetService<T>(sessionType, new SessionId(id));
         }
 
         public void StartSession(Action<SessionId, NSessionHandler> initRoutine)
@@ -74,7 +74,7 @@ namespace BlazorSessionScopedContainer.Core
             if (_httpContext.HttpContext?.Request.Cookies.ContainsKey("session") == false)
             {
                 _sessionGuid = Guid.NewGuid();
-                _httpContext.HttpContext.Response.Cookies.Append("session", $"{_sessionGuid}");
+                _httpContext.HttpContext.Response.Cookies.Append("session", $"{_sessionGuid}", new CookieOptions() { Expires = DateTimeOffset.MaxValue});
                 _sessionNewlySet = true;
             }
             InitializeSession(initRoutine);

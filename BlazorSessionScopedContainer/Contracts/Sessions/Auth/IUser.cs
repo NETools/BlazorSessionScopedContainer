@@ -9,10 +9,8 @@ namespace BlazorSessionScopedContainer.Contracts.Sessions.Auth
 {
     public interface IUser : INotifyPropertyChanged
 	{
-        ICredential UserCredential { get; }
+        ICredential UserCredential { get; set; }
         Guid UserGuid { get; set; }
         string Role { get; set; }
-
-        void Initialize(ICredential credential, Guid userGuid);
     }
 }

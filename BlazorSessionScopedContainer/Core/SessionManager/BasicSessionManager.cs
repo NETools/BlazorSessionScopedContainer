@@ -54,7 +54,7 @@ namespace BlazorSessionScopedContainer.Core.SessionManager
 				}));
 		}
 
-		public void AddGlobalService<T>(params object[] args) where T : class, INotifyPropertyChanged
+		public void AddGlobalService<T>(params object[] args) where T : class
         {
 			PrepareSession(SessionType.Global, Guid.Empty);
 
@@ -75,7 +75,7 @@ namespace BlazorSessionScopedContainer.Core.SessionManager
 				}));
 		}
 
-		public void AddGlobalService<T, U>(params object[] args) where T : class, INotifyPropertyChanged where U : class, T
+		public void AddGlobalService<T, U>(params object[] args) where T : class where U : class, T
 		{
 			PrepareSession(SessionType.Global, Guid.Empty);
 
@@ -96,7 +96,7 @@ namespace BlazorSessionScopedContainer.Core.SessionManager
 				}));
 		}
 
-		public void AddVolatileService<T>(SessionId sessionId,  params object[] args) where T : class, INotifyPropertyChanged
+		public void AddVolatileService<T>(SessionId sessionId,  params object[] args) where T : class
         {
 			var sessionGuid = InternalExposure.RetrieveGuid(sessionId);
 			if (!sessionGuid.HasValue)
@@ -124,7 +124,7 @@ namespace BlazorSessionScopedContainer.Core.SessionManager
 
 		public void AddVolatileService<T, U>(
 			SessionId sessionId,
-			params object[] args) where T : class, INotifyPropertyChanged where U : class, T 
+			params object[] args) where T : class where U : class, T 
 		{
 			var sessionGuid = InternalExposure.RetrieveGuid(sessionId);
 			if (!sessionGuid.HasValue)
@@ -150,7 +150,7 @@ namespace BlazorSessionScopedContainer.Core.SessionManager
 			}));
 		}
 
-		private T GetSessionInstance<T>(SessionType sessionType, Dictionary<SessionType, Guid> sessionIds, IMigrationContext migrationContext, object[] args) where T : INotifyPropertyChanged
+		private T GetSessionInstance<T>(SessionType sessionType, Dictionary<SessionType, Guid> sessionIds, IMigrationContext migrationContext, object[] args)
 		{
 			var serviceType = typeof(T);
 			var dependentTypes = InternalExposure.GetDependencies<T>();
@@ -169,16 +169,28 @@ namespace BlazorSessionScopedContainer.Core.SessionManager
 				}
 			}
 
-			var instance = migrationContext.RetrieveData<T>(sessionType, sessionIds[sessionType], requiredServiceInstances.ToArray());
+			// sessionType, sessionIds[sessionType]
+			var arguments = new Dictionary<string, dynamic>
+			{
+				{ "SessionType", sessionType }
+			};
+			if (sessionType != SessionType.Global)
+				arguments.Add("SessionId", sessionIds[sessionType]);
+			
+			var instance = migrationContext.RetrieveData<T>(arguments, requiredServiceInstances.ToArray());
  
 			var appropiateMethods = ReflectionHelpers.GetMethodsWithAttribute(serviceType, typeof(OnSessionInitialize));
 			if (appropiateMethods.Any())
 				appropiateMethods.First().Invoke(instance, args);
 
-			instance.PropertyChanged += (sender, e) =>
+			if (instance is INotifyPropertyChanged publisher && sessionType != SessionType.Global)
 			{
-				migrationContext.Save<T>(instance, e.PropertyName, sessionType, sessionIds[sessionType]);
-			};
+				publisher.PropertyChanged += (sender, e) =>
+				{
+					migrationContext.Save<T>(instance, e.PropertyName, arguments);
+				};
+			}
+
 
 			return instance;
 		}
@@ -205,7 +217,7 @@ namespace BlazorSessionScopedContainer.Core.SessionManager
 			_migrationContext = context;
 		}
 
-		public T? GetService<T>(SessionType sessionType, SessionId sessionId) where T : class, INotifyPropertyChanged
+		public T? GetService<T>(SessionType sessionType, SessionId sessionId) where T : class
 		{
             var sessionGuid = InternalExposure.RetrieveGuid(sessionId);
             if (!sessionGuid.HasValue)

@@ -19,15 +19,15 @@ namespace BlazorSessionScopedContainer.Contracts.Sessions
 	}
 	public interface ISessionManager
 	{
-		void AddGlobalService<T>(params object[] args) where T : class, INotifyPropertyChanged;
-		void AddVolatileService<T>(SessionId sessionId,  params object[] args) where T : class, INotifyPropertyChanged;
+		void AddGlobalService<T>(params object[] args) where T : class;
+		void AddVolatileService<T>(SessionId sessionId,  params object[] args) where T : class;
 		void AddAuthService<T>(SessionId sessionId, SessionId authId) where T : class, IAuthenticationScoped;
 
-		void AddGlobalService<T, U>(params object[] args) where T : class, INotifyPropertyChanged where U : class, T;
-		void AddVolatileService<T, U>(SessionId sessionId,  params object[] args) where T : class, INotifyPropertyChanged where U : class, T;
+		void AddGlobalService<T, U>(params object[] args) where T : class where U : class, T;
+		void AddVolatileService<T, U>(SessionId sessionId,  params object[] args) where T : class where U : class, T;
 
 		void SetCurrentMigrationContext(IMigrationContext context);
 
-		T? GetService<T>(SessionType sessionType, SessionId sessionId) where T : class, INotifyPropertyChanged;
+		T? GetService<T>(SessionType sessionType, SessionId sessionId) where T : class;
 	}
 }
