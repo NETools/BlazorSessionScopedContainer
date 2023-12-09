@@ -9,7 +9,7 @@ namespace BlazorSessionScopedContainer.Contracts.Sessions.Auth
 {
     public interface ICredential 
 	{
-        List<CredentialSlot> UserData { get; set; }
+        IList<CredentialSlot> UserData { get; set; }
 		string CredentialId { get; }
 		bool IsActivated { get; }
 
